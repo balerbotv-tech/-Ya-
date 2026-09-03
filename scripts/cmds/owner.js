@@ -18,25 +18,25 @@ module.exports = {
   onStart: async function ({ api, event }) {
     const ownerText = 
 `╭─ 👑 Oᴡɴᴇʀ Iɴғᴏ 👑 ─╮
-│ 👤 Nᴀᴍᴇ       : Mᴏʜᴀᴍᴍᴀᴅ Aᴋᴀsʜ
-│ 🧸 Nɪᴄᴋ       : Aᴋᴀsʜ
-│ 🎂 Aɢᴇ        : 18+
-│ 💘 Rᴇʟᴀᴛɪᴏɴ : Sɪɴɢʟᴇ
-│ 🎓 Pʀᴏғᴇssɪᴏɴ : Sᴛᴜᴅᴇɴᴛ
-│ 📚 Eᴅᴜᴄᴀᴛɪᴏɴ : Iɴᴛᴇʀ 2ɴᴅ Yᴇᴀʀ
-│ 🏡 Lᴏᴄᴀᴛɪᴏɴ : 𝐃𝐡𝐚𝐤𝐚 - 𝐆𝐚𝐳𝐢𝐩𝐮𝐫
+│ 👤 Nᴀᴍᴇ       : 亗^⁠_^𝗔_𝗥_𝗜_𝗬_𝗔_⁠𝗡^_^ 𝐁𝐁'𝐙 ✿᭄
+│🧸 Nɪᴄᴋ       : AruuuH
+│ 🎂 Aɢᴇ        : 19+
+│ 💘 Rᴇʟᴀᴛɪᴏɴ : Married 
+│ 🎓 Pʀᴏғᴇssɪᴏɴ : Business 
+│ 📚 Eᴅᴜᴄᴀᴛɪᴏɴ : chudling pong 
+│ 🏡 Lᴏᴄᴀᴛɪᴏɴ : Dhaka keraniganj 
 ├─ 🔗 Cᴏɴᴛᴀᴄᴛ ─╮
-│ 📘 Facebook  : fb.com/akashx404 
-│ 💬 Messenger: m.me/akashx404 
-│ 📞 WhatsApp  : wa.me/01933165880
+│ 📘 Facebook  : https://facebook.com/61582149885357
+│ 💬 messenger : m.me/aruuhbbz
+│ 📞 WhatsApp  : wa.me/01704471566
 ╰────────────────╯`;
 
-    const cacheDir = path.join(__dirname, "cache");
+   const cacheDir = path.join(__dirname, "cache");
     const imgPath = path.join(cacheDir, "owner.jpg");
 
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-    const imgLink = "https://i.imgur.com/1G4ZhU7.jpeg";
+    const imgLink = "https://i.imgur.com/KmX1XZp.jpeg";
 
     const send = () => {
       api.sendMessage(

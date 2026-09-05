@@ -1,34 +1,20 @@
 const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
 
 module.exports = {
     config: {
         name: "intro",
-        version: "1.1",
+        version: "2.0",
         author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
         category: "OWNER",
-        guide: "{pn} - Owner intro video pathabe"
+        guide: "{pn} - Gojo Intro"
     },
 
     onStart: async function ({ api, event }) {
         try {
-            // Ekhane tomar video er direct link boshao
-            const videoUrl = "https://i.imgur.com/VIDEO_LINK.mp4"; // <-- Eita change koro
+            // Gojo Sigma 10s er video link - direct download hobe
+            const videoUrl = "https://files.catbox.moe/9x8k2l.mp4"; // Gojo "Domain Expansion" edit
             
-            const cachePath = path.join(__dirname, "intro_cache.mp4");
-
-            // Jodi age download na thake tahole download korbe
-            if (!fs.existsSync(cachePath)) {
-                const res = await axios.get(videoUrl, { responseType: "stream" });
-                const writer = fs.createWriteStream(cachePath);
-                res.data.pipe(writer);
-                await new Promise((resolve, reject) => {
-                    writer.on("finish", resolve);
-                    writer.on("error", reject);
-                });
-            }
-
             const introText = `╭─ 👑 Oᴡɴᴇʀ Iɴғᴏ 👑 ─╮
 │ 👤 Nᴀᴍᴇ : 亗^⁠_^𝗔_𝗥_𝗜_𝗬_𝗔_⁠𝗡^_^ 𝐁𝐁'𝐙
 │🧸 Nɪᴄᴋ : AruuuH 
@@ -43,15 +29,16 @@ module.exports = {
 │ 📞 WhatsApp : wa.me/01704471566 
 ╰────────────────╯`;
 
-            const attachment = fs.createReadStream(cachePath);
+            // video download kore pathano
+            const response = await axios.get(videoUrl, { responseType: 'stream' });
             
             return api.sendMessage({ 
                 body: introText, 
-                attachment: attachment 
+                attachment: response.data
             }, event.threadID, event.messageID);
 
         } catch (e) {
-            return api.sendMessage("❌ Video load hoi nai. Link thik ase kina check koro", event.threadID, event.messageID);
+            return api.sendMessage("❌ Video load hoi nai. Link check koro", event.threadID, event.messageID);
         }
     }
 };

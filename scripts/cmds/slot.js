@@ -1,90 +1,45 @@
-module.exports.config = {
-  name: "slot",
-  version: "3.0.0",
-  author: "EryXenX",
-  role: 0,
-  category: "economy",
-  shortDescription: "Slot Machine Game"
-};
+const fs = require("fs");
+const path = "./balance.json";
 
-module.exports.onStart = async function ({ api, event, args, usersData }) {
-  const { senderID, threadID, messageID } = event;
+module.exports = {
+    config: {
+        name: "slot",
+        version: "1.1",
+        author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
+        category: "GAME",
+        guide: "{pn} <bet_amount>"
+    },
+    onStart: async function ({ api, event, args }) {
+        if (!fs.existsSync(path)) fs.writeFileSync(path, "{}");
+        let data = JSON.parse(fs.readFileSync(path));
+        const uid = event.senderID;
+        if (!data[uid]) data[uid] = 1000;
 
-  const bet = parseInt(args[0]);
-  if (!bet || bet <= 0)
-    return api.sendMessage("Enter valid bet amount.", threadID, messageID);
+        const bet = parseInt(args[0]) || 50;
+        if (data[uid] < bet) return api.sendMessage(`❌ Tomar kase ${data[uid]} tk ase. ${bet} tk nai!`, event.threadID, event.messageID);
 
-  const userData = await usersData.get(senderID);
-  let balance = userData?.data?.money ?? 100;
+        const emojis = ["🍒", "🍋", "🍊", "🍇", "💎", "7️⃣"];
+        let roll = Math.random();
+        let result;
 
-  if (balance < bet)
-    return api.sendMessage("❌ Not enough balance!", threadID, messageID);
+        if (roll < 0.3) { // 30% jackpot
+            const winEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            result = [winEmoji, winEmoji, winEmoji];
+        } else {
+            result = [emojis[Math.floor(Math.random()*6)], emojis[Math.floor(Math.random()*6)], emojis[Math.floor(Math.random()*6)]];
+        }
 
-  const symbols = ["🍎", "🍌", "🍒", "⭐", "7️⃣"];
-  const win = Math.random() * 100 < 60;
-  const winAmount = bet;
+        const isWin = result[0] === result[1] && result[1] === result[2];
 
-  let slot1, slot2, slot3;
-
-  if (win) {
-    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-    slot1 = slot2 = slot3 = symbol;
-    balance += winAmount;
-  } else {
-    do {
-      slot1 = symbols[Math.floor(Math.random() * symbols.length)];
-      slot2 = symbols[Math.floor(Math.random() * symbols.length)];
-      slot3 = symbols[Math.floor(Math.random() * symbols.length)];
-    } while (slot1 === slot2 && slot2 === slot3);
-    balance -= bet;
-  }
-
-  await usersData.set(senderID, { data: { ...userData.data, money: balance } });
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const buildFrame = (s1, s2, s3, status) => {
-    return `🎰 SLOT MACHINE 🎰\n──────────────────\n🎲 ${status} →\n[ ${s1} | ${s2} | ${s3} ]`;
-  };
-
-  const initialMsg = `${buildFrame("❓", "❓", "❓", "Spinning")}\n\nGood luck! 🍀`;
-
-  api.sendMessage(initialMsg, threadID, (err, info) => {
-    if (err || !info) return;
-
-    const messageIDForEdit = info.messageID;
-
-    (async () => {
-      await delay(700);
-      api.editMessage(buildFrame(slot1, "❓", "❓", "Spinning"), messageIDForEdit);
-
-      await delay(700);
-      api.editMessage(buildFrame(slot1, slot2, "❓", "Spinning"), messageIDForEdit);
-
-      await delay(700);
-
-      let finalText;
-      if (win) {
-        finalText =
-          `${buildFrame(slot1, slot2, slot3, "Result")}\n` +
-          `──────────────────\n` +
-          `🏆 JACKPOT WINNER! 🏆\n` +
-          `💵 Earned → +${winAmount}$\n` +
-          `💰 Balance → ${balance}$\n` +
-          `──────────────────\n` +
-          `Bet again? Type: slot <amount>`;
-      } else {
-        finalText =
-          `${buildFrame(slot1, slot2, slot3, "Result")}\n` +
-          `──────────────────\n` +
-          `💸 YOU LOSE!\n` +
-          `💵 Lost → -${bet}$\n` +
-          `💰 Balance → ${balance}$\n` +
-          `──────────────────\n` +
-          `Better luck next time! 🍀`;
-      }
-
-      api.editMessage(finalText, messageIDForEdit);
-    })();
-  }, messageID);
+        if (isWin) {
+            const win = bet * 3;
+            data[uid] += win;
+            fs.writeFileSync(path, JSON.stringify(data));
+            return api.sendMessage(`🎰 [ ${result.join(" | ")} ]\n🎉 JACKPOT!!!\nTumi jitso: ${win} tk\n💰 New Balance: ${data[uid]} tk`, event.threadID, event.messageID);
+        } else {
+            data[uid] -= bet;
+            fs.writeFileSync(path, JSON.stringify(data));
+            return api.sendMessage(`🎰 [ ${result.join(" | ")} ]\n😭 Harso: ${bet} tk\n💰 New Balance: ${data[uid]} tk`, event.threadID, event.messageID);
+        }
+    }
 };

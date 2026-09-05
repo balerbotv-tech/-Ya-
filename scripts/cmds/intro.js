@@ -1,19 +1,17 @@
 const axios = require("axios");
-const fs = require("fs");
 
 module.exports = {
     config: {
         name: "intro",
-        version: "2.0",
+        version: "4.0",
         author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
-        category: "OWNER",
-        guide: "{pn} - Gojo Intro"
+        category: "OWNER"
     },
 
     onStart: async function ({ api, event }) {
         try {
-            // Gojo Sigma 10s er video link - direct download hobe
-            const videoUrl = "https://files.catbox.moe/9x8k2l.mp4"; // Gojo "Domain Expansion" edit
+            // Tmr pathano Gojo video - direct stream
+            const videoUrl = "https://i.imgur.com/GojoEdit.mp4"; // ami pore real link dibo
             
             const introText = `╭─ 👑 Oᴡɴᴇʀ Iɴғᴏ 👑 ─╮
 │ 👤 Nᴀᴍᴇ : 亗^⁠_^𝗔_𝗥_𝗜_𝗬_𝗔_⁠𝗡^_^ 𝐁𝐁'𝐙
@@ -27,18 +25,18 @@ module.exports = {
 │ 📘 Facebook : https://facebook.com/61582149885357 
 │ 💬 messenger : m.me/aruuhbbz 
 │ 📞 WhatsApp : wa.me/01704471566 
-╰────────────────╯`;
+╰────────────────╯
+\n🔥 "Throughout heaven and earth, I alone am the honored one" 🔥`;
 
-            // video download kore pathano
-            const response = await axios.get(videoUrl, { responseType: 'stream' });
+            const res = await axios.get(videoUrl, { responseType: 'stream', timeout: 20000 });
             
             return api.sendMessage({ 
                 body: introText, 
-                attachment: response.data
+                attachment: res.data
             }, event.threadID, event.messageID);
 
         } catch (e) {
-            return api.sendMessage("❌ Video load hoi nai. Link check koro", event.threadID, event.messageID);
+            return api.sendMessage("❌ Video load hoi nai: "+e.message, event.threadID, event.messageID);
         }
     }
 };

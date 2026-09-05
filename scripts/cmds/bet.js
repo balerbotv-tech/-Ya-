@@ -1,59 +1,35 @@
-module.exports.config = {
-  name: "bet",
-  version: "3.0",
-  author: "MOHAMMAD AKASH",
-  role: 0,
-  category: "economy",
-  shortDescription: "Casino betting game"
-};
+const fs = require("fs");
+const path = "./balance.json";
 
-module.exports.onStart = async function ({ api, event, args, usersData }) {
-  const { senderID, threadID, messageID } = event;
+module.exports = {
+    config: {
+        name: "bet",
+        version: "1.1",
+        author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
+        category: "GAME",
+        guide: "{pn} <amount>"
+    },
+    onStart: async function ({ api, event, args }) {
+        if (!fs.existsSync(path)) fs.writeFileSync(path, "{}");
+        let data = JSON.parse(fs.readFileSync(path));
+        const uid = event.senderID;
+        if (!data[uid]) data[uid] = 1000;
 
-  if (!args[0])
-    return api.sendMessage("🎰 Usage: bet <amount>", threadID, messageID);
+        const amount = parseInt(args[0]);
+        if (!amount || amount < 10) return api.sendMessage("⚠ Min bet: 10 tk", event.threadID, event.messageID);
+        if (data[uid] < amount) return api.sendMessage(`❌ Balance nai! Tomar ase: ${data[uid]} tk`, event.threadID, event.messageID);
 
-  const bet = parseInt(args[0]);
-  if (!bet || bet <= 0)
-    return api.sendMessage("❌ Invalid bet amount!", threadID, messageID);
+        const win = Math.random() < 0.6; // 60% win chance
 
-  const userData = await usersData.get(senderID);
-  let balance = userData?.data?.money ?? 100;
-
-  if (balance < bet)
-    return api.sendMessage(`❌ Not enough balance!\n🏦 Balance: ${balance}$`, threadID, messageID);
-
-  const outcomes = [
-    { text: "💥 You lost everything!", multiplier: 0 },
-    { text: "😞 You got back half.", multiplier: 0.5 },
-    { text: "🟡 You broke even.", multiplier: 1 },
-    { text: "🟢 You doubled your money!", multiplier: 2 },
-    { text: "🔥 You tripled your bet!", multiplier: 3 },
-    { text: "🎉 JACKPOT! 10x reward!", multiplier: 10 }
-  ];
-
-  const win = Math.random() < 0.6;
-  let selected;
-
-  if (win) {
-    const winOutcomes = outcomes.filter(o => o.multiplier > 0);
-    selected = winOutcomes[Math.floor(Math.random() * winOutcomes.length)];
-  } else {
-    const loseOutcomes = outcomes.filter(o => o.multiplier === 0);
-    selected = loseOutcomes[Math.floor(Math.random() * loseOutcomes.length)];
-  }
-
-  const reward = Math.floor(bet * selected.multiplier);
-  balance = balance - bet + reward;
-
-  await usersData.set(senderID, { data: { ...userData.data, money: balance } });
-
-  const msg =
-`${selected.text}
-
-🎰 You bet: ${bet}$
-💸 You won: ${reward}$
-💰 New balance: ${balance}$`;
-
-  api.sendMessage(msg, threadID, messageID);
+        if (win) {
+            const winAmount = amount * 2;
+            data[uid] += amount; // profit = bet amount
+            fs.writeFileSync(path, JSON.stringify(data));
+            return api.sendMessage(`💸 TUMI JITSO! 🎉\nProfit: +${amount} tk\n💰 New Balance: ${data[uid]} tk`, event.threadID, event.messageID);
+        } else {
+            data[uid] -= amount;
+            fs.writeFileSync(path, JSON.stringify(data));
+            return api.sendMessage(`😭 TUMI HARCHO!\nLoss: -${amount} tk\n💰 New Balance: ${data[uid]} tk`, event.threadID, event.messageID);
+        }
+    }
 };

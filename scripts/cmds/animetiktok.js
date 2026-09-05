@@ -11,48 +11,54 @@ function getUsedVideos() {
 function saveUsedVideo(url) {
     let used = getUsedVideos();
     used.push(url);
-    if (used.length > 100) used = used.slice(-100);
+    if (used.length > 200) used = used.slice(-200);
     fs.writeFileSync(cacheFile, JSON.stringify(used));
 }
 
 module.exports = {
     config: {
         name: "animetiktok",
-        version: "1.2",
+        version: "1.3",
         author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
         category: "FUN",
         guide: "{pn} - Anime attitude clip"
     },
 
     onStart: async function ({ api, event }) {
-        try {
-            const used = getUsedVideos();
-            let mediaUrl;
-            let attempts = 0;
+        const apis = [
+            "https://nekos.best/api/v2/neko",
+            "https://nekos.life/api/v2/img/neko",
+            "https://api.waifu.pics/sfw/waifu"
+        ];
 
-            // duplicate na asha porjonto try korbe
-            do {
-                const res = await axios.get("https://api.waifu.pics/sfw/waifu");
-                mediaUrl = res.data.url;
-                attempts++;
-            } while (used.includes(mediaUrl) && attempts < 5);
+        const captions = [
+            "🔥 Anime Attitude ON",
+            "😎 Boss Entry",
+            "👑 Tui ki vabsili?",
+            "💀 Haters ra jole jabe",
+            "⚡ Sigma Anime Vibes"
+        ];
+        const randCap = captions[Math.floor(Math.random() * captions.length)];
 
-            saveUsedVideo(mediaUrl);
+        for (let apiUrl of apis) {
+            try {
+                let used = getUsedVideos();
+                let res = await axios.get(apiUrl, { timeout: 8000 });
 
-            const captions = [
-                "🔥 Anime Attitude ON",
-                "😎 Boss Entry",
-                "👑 Tui ki vabsili?",
-                "💀 Haters ra jole jabe",
-                "⚡ Sigma Anime Vibes"
-            ];
-            const randCap = captions[Math.floor(Math.random() * captions.length)];
+                let mediaUrl = res.data.results?.[0]?.url || res.data.url;
+                if (!mediaUrl) continue;
+                if (used.includes(mediaUrl)) continue;
 
-            const img = await axios.get(mediaUrl, { responseType: "stream" });
-            return api.sendMessage({ body: randCap, attachment: img.data }, event.threadID, event.messageID);
+                saveUsedVideo(mediaUrl);
+                const img = await axios.get(mediaUrl, { responseType: "stream", timeout: 8000 });
 
-        } catch (e) {
-            return api.sendMessage("❌ Clip load hoi nai, abar try kor", event.threadID, event.messageID);
+                return api.sendMessage({ body: randCap, attachment: img.data }, event.threadID, event.messageID);
+
+            } catch (e) {
+                continue; // ei API fail korle porer ta try korbe
+            }
         }
+
+        return api.sendMessage("❌ Server busy. 2 min por abar try kor bhai", event.threadID, event.messageID);
     }
 };

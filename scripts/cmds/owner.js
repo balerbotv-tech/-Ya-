@@ -3,15 +3,13 @@ const request = require("request");
 const path = require("path");
 
 module.exports = {
-  config: {    
-        name: "owner",
-        version: "1.4.0",
-        author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
-        role: 0,
-        shortDescription: "Owner information with image",
-        category: "Information",
-        guide: { en: "owner" }
-  
+  config: {
+    name: "owner",
+    version: "1.3.0",
+    author: "Mᴏʜᴀᴍᴍᴀᴅ Aᴋᴀsʜ",
+    role: 0,
+    shortDescription: "Owner information with image",
+    category: "Information",
     guide: {
       en: "owner"
     }
@@ -57,3 +55,5 @@ module.exports = {
       .on("close", send);
   }
 };
+
+

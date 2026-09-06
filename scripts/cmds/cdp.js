@@ -29,28 +29,23 @@ module.exports = {
             total: "🎀 মোট কাপল ডিপি সংখ্যা: %1",
             noData: "× কোনো ডিপি খুঁজে পাওয়া যায়নি!",
             success: "🎀 | এই নাও তোমাদের ডিপি বেবি <😘",
-            error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇।" // <-- ekhaneo tor nam
+            error: "× সমস্যা হয়েছে: %1"
         },
         en: {
             total: "🎀 Total Couple DPs: %1",
             noData: "× No Couple DP found.",
             success: "🎀 | 𝐇𝐞𝐫𝐞'𝐬 𝐲𝐨𝐮𝐫 𝐜𝐝𝐩 𝐛𝐚𝐛𝐲",
-            error: "× API error: %1. Contact 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇 for help." // <-- ekhaneo tor nam
+            error: "× API error: %1"
         },
         vi: {
             total: "🎀 Tổng số ảnh đôi: %1",
             noData: "× Không tìm thấy ảnh đôi nào.",
             success: "🎀 | Ảnh đôi của các cưng đây <😘",
-            error: "× Lỗi: %1. Liên hệ 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇 để hỗ trợ." // <-- ekhaneo tor nam
+            error: "× Lỗi: %1"
         }
     },
 
     onStart: async function ({ api, event, args, message, getLang }) {
-        const authorName = String.fromCharCode(65, 114, 105, 121, 97, 110, 32, 98, 98, 39, 122); // "Ariyan bb'z" lock
-        if (this.config.author!== authorName) {
-            return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
-        }
-
         try {
             const baseURL = await mahmud();
 

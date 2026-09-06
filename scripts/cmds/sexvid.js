@@ -1,8 +1,3 @@
-📄 | Source code of "sexvid.js":
-
-
-
-
 module.exports = {
   config: {
     name: "sexvid",

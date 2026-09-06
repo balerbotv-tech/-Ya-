@@ -1,56 +1,93 @@
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
-
-const cacheFile = path.join(__dirname, "cdp_cache.json");
-function getUsed() { return fs.existsSync(cacheFile)? JSON.parse(fs.readFileSync(cacheFile)) : []; }
-function saveUsed(url) { let used = getUsed(); used.push(url); if(used.length>100) used=used.slice(-100); fs.writeFileSync(cacheFile, JSON.stringify(used)); }
+const mahmud = async () => {
+    const base = await axios.get("https://raw.githubusercontent.com/mahmudx7/HINATA/main/baseApiUrl.json");
+    return base.data.mahmud;
+};
 
 module.exports = {
     config: {
         name: "cdp",
-        version: "1.0",
+        version: "1.7",
         author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
-        category: "ANIME",
-        guide: "{pn} - Random Romantic Couple Pic"
+        countDown: 5,
+        role: 0,
+        description: {
+            bn: "র‍্যান্ডম কাপল ডিপি এবং ছবি পান",
+            en: "Get random couple profile pictures",
+            vi: "Lấy ảnh đại diện đôi ngẫu nhiên"
+        },
+        category: "love",
+        guide: {
+            bn: ' {pn}: র‍্যান্ডম কাপল ডিপি পান' + '\n {pn} list: মোট কতগুলো ডিপি আছে দেখুন',
+            en: ' {pn}: Get a random couple DP' + '\n {pn} list: Check total available DPs',
+            vi: ' {pn}: Nhận ảnh đại diện đôi ngẫu nhiên' + '\n {pn} list: Kiểm tra tổng số ảnh có sẵn'
+        }
     },
 
-    onStart: async function ({ api, event }) {
-        const apis = [
-            "https://api.waifu.pics/sfw/couple",
-            "https://api.waifu.pics/sfw/kiss",
-            "https://api.waifu.pics/sfw/hug",
-            "https://nekos.best/api/v2/couple"
-        ];
+    langs: {
+        bn: {
+            total: "🎀 মোট কাপল ডিপি সংখ্যা: %1",
+            noData: "× কোনো ডিপি খুঁজে পাওয়া যায়নি!",
+            success: "🎀 | এই নাও তোমাদের ডিপি বেবি <😘",
+            error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇।" // <-- ekhaneo tor nam
+        },
+        en: {
+            total: "🎀 Total Couple DPs: %1",
+            noData: "× No Couple DP found.",
+            success: "🎀 | 𝐇𝐞𝐫𝐞'𝐬 𝐲𝐨𝐮𝐫 𝐜𝐝𝐩 𝐛𝐚𝐛𝐲",
+            error: "× API error: %1. Contact 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇 for help." // <-- ekhaneo tor nam
+        },
+        vi: {
+            total: "🎀 Tổng số ảnh đôi: %1",
+            noData: "× Không tìm thấy ảnh đôi nào.",
+            success: "🎀 | Ảnh đôi của các cưng đây <😘",
+            error: "× Lỗi: %1. Liên hệ 𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇 để hỗ trợ." // <-- ekhaneo tor nam
+        }
+    },
+
+    onStart: async function ({ api, event, args, message, getLang }) {
+        const authorName = String.fromCharCode(65, 114, 105, 121, 97, 110, 32, 98, 98, 39, 122); // "Ariyan bb'z" lock
+        if (this.config.author!== authorName) {
+            return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
+        }
 
         try {
-            let used = getUsed();
-            let img = null;
+            const baseURL = await mahmud();
 
-            for(let url of apis) {
-                let res = await axios.get(url, {timeout: 5000});
-                img = res.data.url || res.data.results?.[0]?.url;
-                if(img &&!used.includes(img)) break;
+            // List logic
+            if (args[0] === "list") {
+                const res = await axios.get(`${baseURL}/api/cdp/list`);
+                return message.reply(getLang("total", res.data.total));
             }
 
-            if(!img) return api.sendMessage("❌ Pic load hoi nai", event.threadID, event.messageID);
+            // Get CDP logic
+            const res = await axios.get(`${baseURL}/api/cdp`);
+            const { boy, girl } = res.data;
+            if (!boy ||!girl) return message.reply(getLang("noData"));
 
-            saveUsed(img);
-            const stream = await axios.get(img, {responseType: "stream"});
+            const getStream = async (url) => {
+                const response = await axios({
+                    method: "GET",
+                    url,
+                    responseType: "stream",
+                    headers: { 'User-Agent': 'Mozilla/5.0' }
+                });
+                return response.data;
+            };
 
-            const captions = [
-                "💘 Cute Couple Vibes",
-                "❤️‍🔥 Romantic Mood ON",
-                "👑 Power Couple",
-                "✨ Love is in the air",
-                "💞 Tag your partner"
+            const attachments = [
+                await getStream(boy),
+                await getStream(girl)
             ];
-            const cap = captions[Math.floor(Math.random() * captions.length)];
 
-            return api.sendMessage({body: cap, attachment: stream.data}, event.threadID, event.messageID);
+            return message.reply({
+                body: getLang("success"),
+                attachment: attachments
+            });
 
-        } catch(e) {
-            return api.sendMessage("❌ Error hoise", event.threadID, event.messageID);
+        } catch (err) {
+            console.error("CDP Error:", err);
+            return message.reply(getLang("error", err.message));
         }
     }
 };

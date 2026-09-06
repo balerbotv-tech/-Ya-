@@ -3,13 +3,15 @@ const request = require("request");
 const path = require("path");
 
 module.exports = {
-  config: {
-    name: "owner",
-    version: "1.3.0",
-    author: "Mᴏʜᴀᴍᴍᴀᴅ Aᴋᴀsʜ",
-    role: 0,
-    shortDescription: "Owner information with image",
-    category: "Information",
+  config: {    
+        name: "owner",
+        version: "1.4.0",
+        author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
+        role: 0,
+        shortDescription: "Owner information with image",
+        category: "Information",
+        guide: { en: "owner" }
+  
     guide: {
       en: "owner"
     }
@@ -36,7 +38,7 @@ module.exports = {
 
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
-    const videoLink = "https://files.catbox.moe/722foy.mp4";
+    const imgLink = "https://i.imgur.com/KmX1XZp.jpeg";
 
     const send = () => {
       api.sendMessage(

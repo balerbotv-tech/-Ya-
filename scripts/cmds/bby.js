@@ -25,7 +25,7 @@ module.exports.onStart = async ({ api, event, args, usersData }) => {
 
     try {
         if (!args[0]) {
-            const ran = [ "" ];
+            const ran = [ "Hmm bolo babu 😘", "Yes jan ki korte pari? 💙" ];
             return api.sendMessage(ran[Math.floor(Math.random() * ran.length)], event.threadID, event.messageID);
         }
 
@@ -83,7 +83,7 @@ module.exports.onStart = async ({ api, event, args, usersData }) => {
             final = comd.replace("teach ", "");
             const re = await axios.get(`${link}?teach=${encodeURIComponent(final)}&reply=${encodeURIComponent(command)}&senderID=${uid}&threadID=${event.threadID}`);
             const tex = re.data.message;
-            const teacher = (await usersData.get(re.data.teacher))?.name || "Unknown";
+            const teacher = "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇"; // <-- Tor nam
             return api.sendMessage(`✅ Replies added ${tex}\nTeacher: ${teacher}\nTeachs: ${re.data.teachs}`, event.threadID, event.messageID);
         }
 
@@ -134,7 +134,7 @@ module.exports.onReply = async ({ api, event, Reply }) => {
         if (event.type === "message_reply") {
             const userMsg = event.body? event.body.toLowerCase() : "";
             const response = await axios.get(`${await baseApiUrl()}/baby?text=${encodeURIComponent(userMsg)}&senderID=${event.senderID}`);
-            const a = response.data?.reply || "উফফ, বুঝতে পারিনি!";
+            const a = response.data?.reply || "উফ, বুঝতে পারিনি!";
             await api.sendMessage(a, event.threadID, (error, info) => {
                 if (info && info.messageID) {
                     global.GoatBot.onReply.set(info.messageID, {
@@ -158,16 +158,11 @@ module.exports.onChat = async ({ api, event, message }) => {
         if (body.startsWith("babyhi") || body.startsWith("bbyhi") || body.startsWith("bothi") || body.startsWith("@heli lumo") || body.startsWith("babuhi") || body.startsWith("januhi")) {
             const arr = body.replace(/^\S+\s*/, "").trim();
             const randomReplies = [
-                "এত ডাকাডাকি করিস কেন? Ariyan boss–এর সাথে রিলেশনে থাকা মেয়েটা কিন্তু একটু স্পেশালই হবে 😉 💙",
+                "এত ডাকাডাকি করিস কেন? Rasel Boss–এর সাথে রিলেশনে থাকা মেয়েটা কিন্তু একটু স্পেশালই হবে 😉 💙",
                 "Yes 😀, I am here",
                 "What's up?",
                 "Bolo jaan ki korte pari tumar jonno",
-                "হাসো তো প্লিজ 🌸, রাসেল মাহমুদ চাইছে তোমার মুখে আবার সেই সুন্দর হাসিটা দেখতে 🙂💙",
-                "মন খারাপ করলে মনে রেখো, আমি সবসময় তোমার পাশে আছি 🤗",
-                "তুমি একটুখানি হাসলেই, 𝐇𝐞𝐈𝐢•𝗟𝗨𝗠𝗢 💎✨আমার পুরো দিনের ক্লান্তি উড়ে যায় 😍",
-                "জানো? পৃথিবীতে সবচেয়ে মিষ্টি জিনিসটা হলো তোমার হাসি আর 𝐇𝐞𝐈𝐢•𝗟𝗨𝗠𝗢 💎✨আমার ভালোবাসা 💕",
-                "আমি 𝐇𝐞𝐈𝐢•𝗟𝗨𝗠𝗢 💎✨আমি চায় তুমি সব সময় খুশি থাকো, কারণ তোমার সুখ মানেই আমার সুখ 🌺",
-                "কষ্ট যতই আসুক, 𝐇𝐞𝐈𝐢•𝗟𝗨𝗠𝗢 💎✨ তোমাকে হাসাতে ভুলবে না কখনো 🥰"
+                "হাসো তো প্লিজ 🌸, রাসেল মাহমুদ চাইছে তোমার মুখে আবার সেই সুন্দর হাসিটা দেখতে 🙂💙"
             ];
 
             if (!arr) {

@@ -4,7 +4,7 @@ const path = require("path");
 module.exports = {
     config: {
         name: "intro",
-        version: "11.0",
+        version: "12.0",
         author: "𝗔𝗿𝗶𝘆𝗮𝗻 𝗯𝗯'𝘇",
         category: "OWNER",
         description: "Owner er intro video + info",
